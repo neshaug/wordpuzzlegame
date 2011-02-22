@@ -142,14 +142,14 @@ describe("Shape", function () {
             return 0;
         });
 
-        expect(shape.height).toBe(1);
-        expect(shape.width).toBe(2);
+        expect(shape.getHeight()).toBe(1);
+        expect(shape.getWidth()).toBe(2);
 
     });
 
     it("should be able to fit within the bounds of origin (of the canvas cartesian coordinate system)", function () {
         var shape = null;
-        shape = Shape.shapeify(word, function ()  {
+        shape = Shape.shapeify(word, function () {
             return 2;
         });
         shape.toOrigin();

@@ -7,47 +7,65 @@ setTimeout
 */
 var neshaug = neshaug || {};
 
-neshaug.Game = function () {
+neshaug.Game = function (canvas, menu, letters, words) {
+
     this._boardView = null;
-    this.words = null;
-    this.pause = false;
+    this._initBoardView(new neshaug.BoardView(canvas, letters));
+
+    this._menu = menu;
+    this._words = words;
+
+    this._pause = false;
     this._board = null;
-    this._currentWordIndex = 0;
+    this._currentWord = null;
     this._selected = [];
     this._shapes = [];
-    this.timeoutId = 0;
-
+    this._usedIndexes = [];
+    this._completeHandler = function () {};
 };
 
-neshaug.Game.prototype = Object.create(Object.prototype, {
-    boardView: {
-        get: function () {
-            return this._boardView;
-        },
-        set: function (boardView) {
-            var that = this;
-            this._boardView = boardView;
-            this._boardView.canvas.addEventListener("onDrag", function (e) {
-                that._handleDrag(e.row, e.column);
-            });
-            this._boardView.canvas.addEventListener("onDragEnd", function (e) {
-                that._handleDragEnd();
-            });
-            this._boardView.canvas.addEventListener("onDragStart", function (e) {
-                that._handleDrag(e.row, e.column);
-            });
-        },
-        enumerable: true
-    }
-});
-
 neshaug.Game.prototype.constructor = neshaug.Game;
+
+neshaug.Game.prototype.onComplete = function (callback) {
+    this._completeHandler = callback;
+};
+
+neshaug.Game.prototype.pause = function () {
+    this._pause = true;
+};
+
+neshaug.Game.prototype.resume = function () {
+    this._pause = false;
+    this._loop();
+};
+
+neshaug.Game.prototype._initBoardView = function (boardView) {
+    var that = this;
+    this._boardView = boardView;
+
+    this._boardView.setOnDragHandler(function (row, column) {
+        that._handleDrag(row, column);
+    });
+
+    this._boardView.setOnDragEndHandler(function (row, column) {
+        that._handleDragEnd(row, column);
+    });
+
+    this._boardView.setOnDragStartHandler(function (row, column) {
+        that._handleDrag(row, column);
+    });
+};
+
+neshaug.Game.prototype.getBoardView = function () {
+    return this._boardView;
+};
+
 
 neshaug.Game.prototype._initBoard = function () {
     this._board = new neshaug.Board();
     this._fill();
-    this.boardView.board = this._board;
-    this.boardView.resize();
+    this._boardView.setBoard(this._board);
+    this._boardView.resize();
 };
 
 neshaug.Game.prototype._handleDrag = function (row, column) {
@@ -71,51 +89,67 @@ neshaug.Game.prototype._handleDragEnd = function () {
         }
         word = word.join("");
         if (word === this._currentWord) {
-            this._board = null;
-            this._currentWordIndex++;
+            if (this._usedIndexes.length === this._words.length) {
+                this._completeHandler();
+                this._pause = true;
+                return;
+            }
+            else {
+                this._board = null;
+            }
         }
         this._selected = [];
     }
 };
 
-neshaug.Game.prototype.start = function () {
-    if (this.words === null || this.boardView === null) {
-        throw new Error("words and board view needs to be set first");
-    }
+neshaug.Game.prototype._loop = function () {
     var that = this;
 
-    function gameLoop() {
-        if (this._board === null) {
-            this._initBoard();
-        }
-
-        this.boardView.draw();
-
-        if (!this.pause) {
-            this.timeoutId = setTimeout(function () {
-                gameLoop.call(that);
-            }, 30);
-        }
+    if (this._board === null) {
+        this._initBoard();
     }
-    gameLoop.call(that);
+
+    this._boardView.draw();
+
+    if (!this._pause) {
+        setTimeout(function () {
+            that._loop();
+        }, 30);
+    }
 };
 
-neshaug.Game.prototype.place = function (word) {
-
+neshaug.Game.prototype.start = function () {
+    if (this._words === null || this._boardView === null) {
+        throw new Error("words and board view needs to be set first");
+    }
+    this._loop();
 };
 
 neshaug.Game.prototype._fill = function () {
-    this._currentWord = this.words[this._currentWordIndex];
+    this._currentWord = null;
+    var tempIndex = 0;
+
+    while (this._currentWord === null) {
+        tempIndex = neshaug.Utils.random(0, this._words.length - 1);
+        this._currentWord = this._words.splice(tempIndex, 1)[0];
+    }
+
     var length = this._currentWord.length;
 
     var shape = neshaug.Shape.shapeify(this._currentWord, neshaug.Utils.random);
     shape.toOrigin();
-    var width = shape.width;
-    var height = shape.height;
 
-    this._board.setSize(10, 10);
+    this._menu.draw(shape);
 
-    for(var i = 0; i < shape.points.length; i++) {
+    var width = shape.getWidth();
+    var height = shape.getHeight();
+
+    var boardSize = width > height ? width : height;
+    boardSize = boardSize;
+
+    this._board.setSize(boardSize, boardSize);
+
+    for (var i = 0; i < shape.points.length; i++) {
         this._board.setPiece(shape.word[i], shape.points[i].x, shape.points[i].y);
     }
     this._shapes.push(shape);

@@ -150,26 +150,25 @@ var neshaug = neshaug || {};
             var maxAndMin = getMaxAndMin(this.points),
                 minX = maxAndMin.minX,
                 minY = maxAndMin.minY;
-            this.setPosition(minX * -1, minY * -1);
+            this.setPosition(minX < 0 ? minX * -1 : minX, minY < 0 ? minY * -1 : minY);
+        };
+
+        this.hasPoint = function (x, y) {
+            return hasPoint(this, new Point(x, y));
         };
     }
 
-    Shape.prototype = Object.create(Object.prototype, {
-        height: {
-            enumerable: true,
-            get: function () {
-                var maxAndMin = getMaxAndMin(this.points);
-                return Math.abs(maxAndMin.maxY - maxAndMin.minY) + 1;
-            }
-        },
-        width: {
-            enumerable: true,
-            get: function () {
-                var maxAndMin = getMaxAndMin(this.points);
-                return Math.abs(maxAndMin.maxX - maxAndMin.minX) + 1;
-            }
-        }
-    });
+    Shape.prototype.constructor = Shape;
+
+    Shape.prototype.getHeight = function () {
+        var maxAndMin = getMaxAndMin(this.points);
+        return Math.abs(maxAndMin.maxY - maxAndMin.minY) + 1;
+    };
+
+    Shape.prototype.getWidth = function () {
+        var maxAndMin = getMaxAndMin(this.points);
+        return Math.abs(maxAndMin.maxX - maxAndMin.minX) + 1;
+    };
 
 /*
  * Create a random shape of the word.

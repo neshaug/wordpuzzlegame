@@ -6,19 +6,77 @@
                 padding: 0px 0px 0px 0px;
                 border: none;
             }
+
+            #menu {
+                border: 1px solid black;
+                width: 150px;
+            }
+
+            p.css-vertical-text {
+                color:#333;
+                border:0px solid red;
+                writing-mode:tb-rl;
+                -webkit-transform:rotate(90deg);
+                -moz-transform:rotate(90deg);
+                -o-transform: rotate(90deg);
+                white-space:nowrap;
+                display:block;
+                bottom:0;
+                width:20px;
+                height:20px;
+                font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+                font-size:24px;
+                font-weight:normal;
+                text-shadow: 0px 0px 1px #333;
+            }
+
+            .rounded {
+                border: 10px solid #e0e0e0;
+                border-radius: 20px;
+                -moz-border-radius: 20px;
+            }
+
+            .dialog {
+                position: fixed;
+            }
+
+            .dialog .text {
+                padding-top: 10px;
+                text-align: center;
+                font-size: 24px;
+                font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+                height: 60%;
+            }
+
+            .dialog .button {
+                height: 40%;
+                position: relative;
+                font-size: 60px;
+                text-align: center;
+                bottom: 2px;
+                font-family: ‘Trebuchet MS’, Helvetica, sans-serif;
+                cursor: pointer;
+            }
         </style>
     </head>
     <body>
-
     </body>
     <script type="text/javascript" src="src/Utils.js"></script>
 
-    <script type="text/javascript" src="src/Game.js"></script>
-    <script type="text/javascript" src="src/Board.js"></script>
     <script type="text/javascript" src="src/LetterPainter.js"></script>
-    <script type="text/javascript" src="src/TileView.js"></script>
+
+    <script type="text/javascript" src="src/Game.js"></script>
+    <script type="text/javascript" src="src/GameDialog.js"></script>
+
+    <script type="text/javascript" src="src/Board.js"></script>
     <script type="text/javascript" src="src/BoardView.js"></script>
+
     <script type="text/javascript" src="src/Shape.js"></script>
+    <script type="text/javascript" src="src/ShapeView.js"></script>
+
+    <script type="text/javascript" src="src/Menu.js"></script>
+
+    <script type="text/javascript" src="resources/Words.js"></script>
 
     <script type="text/javascript" src="src/start.js"></script>
 </html>

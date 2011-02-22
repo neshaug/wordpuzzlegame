@@ -1,58 +1,74 @@
 /*jslint
-nomen: false, plusplus: false, onevar: false
+nomen: false, plusplus: false
 */
 
 /*global
     document, neshaug, Image
 */
 
-var height = document.body.clientHeight;
-var width = document.body.clientWidth;
+(function () {
+    var browser = neshaug.Utils.browser,
+        Utils = neshaug.Utils,
+        size = 0,
+        canvas = null,
+        container = null,
+        letterPainter = null,
+        bgImage = null;
 
-var canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
-canvas.height = height;
-canvas.width = width;
+    size = browser.screenHeight < browser.screenWidth ? browser.screenHeight : browser.screenWidth;
+    size = size * 0.90;
+    
+    // main canvas (board canvas)
+    canvas = document.createElement("canvas");
+    canvas.height = size;
+    canvas.width = size;
+    canvas.style.position = "fixed";
 
-var letterCanvas = document.createElement("canvas");
-letterCanvas.height = 128;
-letterCanvas.width = 128;
+    document.body.appendChild(canvas);
+    canvas.className = "rounded";
+    canvas.style.left = (browser.screenWidth - canvas.offsetWidth) / 2;
+    canvas.style.top = (browser.screenHeight - canvas.offsetHeight) / 2;
 
-var letterPainter = new neshaug.LetterPainter(letterCanvas);
+    letterPainter = new neshaug.LetterPainter();
 
-var bgImage = new Image();
-bgImage.src = "resources/icon.png";
+    function onReady(letters) {
+        var game = null,
+            menu = null,
+            gameDialog;
 
-// resources loaded, set up game
-bgImage.onload = function () {
-    var images = [];
+        function start(numWords) {
+            var i = 0,
+                words = [];
 
-    // create letters (tiles)
-    var i = 97,
-        length = 123;
-    for (i = 97; i < length; i++) {
-        var letter = String.fromCharCode(i);
+            for (i = 0; i < numWords; i++) {
+                words.push(neshaug.words[Utils.random(0, neshaug.words.length - 1)]);
+            }
 
-        var regular = new Image();
-        regular.src = letterPainter.getLetter(letter.toUpperCase(), "black", bgImage);
-        images.push([letter, regular]);
+            game = new neshaug.Game(canvas, menu, letters, words);
+            game.onComplete(function () {
+                gameDialog.setText("Great, you finished the game! It is fully randomized, so have another go!");
+                gameDialog.show();
+                menu.hide();
+            });
 
-        var selected = new Image();
-        selected.src = letterPainter.getLetter(letter.toUpperCase(), "red", bgImage);
-        images.push([letter + "*", selected]);
+            // start your engines!
+            game.start();
+        }
+
+        menu = new neshaug.Menu(neshaug.Utils.browser);
+        menu.hide();
+
+        gameDialog = new neshaug.GameDialog(canvas);
+        gameDialog.show();
+        gameDialog.onPlay(function (wordLengthLimit) {
+            gameDialog.hide();
+            menu.show();
+            start(5);
+        });
+
+
     }
 
-    // set views 
-    var boardView = new neshaug.BoardView(canvas);
-    boardView.setTiles(images);
-
-    // add views and data to game
-    var game = new neshaug.Game();
-    game.boardView = boardView;
-    game.words = ["ross", "rachel"];
-
-    // start your engines!
-    game.start();
-
-    neshaug.game = game;
-};
+    // when all letters are drawn and loaded the callback is called
+    letterPainter.getLetters(onReady);
+}());
