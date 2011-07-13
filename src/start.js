@@ -26,8 +26,8 @@ nomen: false, plusplus: false
 
     document.body.appendChild(canvas);
     canvas.className = "rounded";
-    canvas.style.left = (browser.screenWidth - canvas.offsetWidth) / 2;
-    canvas.style.top = (browser.screenHeight - canvas.offsetHeight) / 2;
+    canvas.style.setProperty("left", ((browser.screenWidth - canvas.offsetWidth) / 2) + "px", "");
+    canvas.style.setProperty("top", ((browser.screenHeight - canvas.offsetHeight) / 2) + "px", "");
 
     letterPainter = new neshaug.LetterPainter();
 
@@ -46,7 +46,7 @@ nomen: false, plusplus: false
 
             game = new neshaug.Game(canvas, menu, letters, words);
             game.onComplete(function () {
-                gameDialog.setText("Great, you finished the game! It is fully randomized, so have another go!");
+                gameDialog.setText("Great, you finished the game! The names are randomized, so have another go!");
                 gameDialog.show();
                 menu.hide();
             });

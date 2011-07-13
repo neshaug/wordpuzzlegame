@@ -34,18 +34,18 @@ var neshaug = neshaug || {};
         var that = this;
 
         this._el = document.createElement("div");
-        this._el.style.position = "fixed";
-        this._el.style.top = this._browser.screenHeight / 2 - 150;
-        this._el.style.left = "10px";
+        this._el.style.setProperty("position", "fixed", "");
+        this._el.style.setProperty("top", (this._browser.screenHeight / 2 - 150) + "px", "");
+        this._el.style.setProperty("left", "10px", "");
 
         this._el.innerHTML = "<span><p class=\"css-vertical-text\">shape</p></span><canvas></canvas>";
         this._canvas = this._el.getElementsByTagName("canvas")[0];
         this._canvas.height = 150;
         this._canvas.width = 150;
-        this._canvas.style.height = "150px";
-        this._canvas.style.width = "150px";
+        this._canvas.style.setProperty("height", "150px", "");
+        this._canvas.style.setProperty("width", "150px", "");
         this._button = this._el.getElementsByTagName("span")[0];
-        this._canvas.style.display = "none";
+        this._canvas.style.setProperty("display", "none", "");
 
         this._el.onclick = function () {
             that._toggle();
@@ -61,26 +61,25 @@ var neshaug = neshaug || {};
             elStyle = this._el.style;
 
         if (this._expanded) {
-            btnStyle.display = "block";
-            cvsStyle.display = "none";
-            elStyle.height = "20px";
-            elStyle.width = "15px";
+            btnStyle.setProperty("display", "block", "");
+            cvsStyle.setProperty("display", "none", "");
+            elStyle.setProperty("height", "20px", "");
+            elStyle.setProperty("width", "15px", "");
             this._expanded = false;
         } else {
-            btnStyle.display = "none";
-            cvsStyle.display = "block";
-            elStyle.height = "150px";
-            elStyle.width = "150px";
+            btnStyle.setProperty("display", "none", "");
+            cvsStyle.setProperty("display", "block", "");
+            elStyle.setProperty("height", "150px", "");
             this._expanded = true;
         }
     };
 
     mp.hide = function () {
-        this._el.style.display = "none";
+        this._el.style.setProperty("display", "none", "");
     };
 
     mp.show = function () {
-        this._el.style.display = "block";
+        this._el.style.setProperty("display", "block", "");
     };
 
     // export
