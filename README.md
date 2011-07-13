@@ -1,4 +1,4 @@
-A quick prototype of a word puzzle game.
+A quick word puzzle game prototype.
 
 Tools used:
 
